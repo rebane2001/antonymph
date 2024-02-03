@@ -1,0 +1,18 @@
+<style>
+  body, html {
+    overflow: hidden;
+    margin: 0;
+    cursor: url(/antonymph/cursor.png) 4 4, auto;
+  }
+</style>
+<script type="text/javascript">
+  document.onkeypress = (event) => {
+    if (event.keyCode == 32)
+      window.opener.emergencyStop();
+  };
+  document.onclick = (e) => {
+    if (e.altKey)
+      window.opener.emergencyStop();
+  };
+  setInterval(()=>{if (!window.opener) window.close();}, 100);
+</script>

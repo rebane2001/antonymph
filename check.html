@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Checking whether popups are allowed...</title>
+</head>
+<body>
+<p>Checking whether popups are allowed...</p>
+<script>
+	try {
+		window.opener.window.markOkay();
+	} catch {};
+	window.close();
+</script>
+</body>
+</html>

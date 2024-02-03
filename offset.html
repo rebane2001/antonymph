@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Measuring screen...</title>
+</head>
+<style>
+    body, html {
+        background: #0A0021;
+        color: white;
+    }
+</style>
+<body>
+<p>Measuring your screen size...</p>
+<script>
+    const offsets = {};
+    function submitOffsets() {
+        window.opener.setOffsets(offsets);
+        window.close();
+    }
+    function setPadding() {
+        if (window.innerWidth <= 200 || window.innerWidth > 300)
+            return false;
+        offsets.paddingOffset = [300 - window.innerWidth, 300 - window.innerHeight];
+        submitOffsets();
+        return true;
+    }
+    function tryResize() {
+        window.addEventListener('resize', () => setPadding(), true);
+        window.resizeTo(300, 300);
+        setTimeout(() => {
+            if (setPadding()) return;
+            window.opener.console.error("Failed to get paddingOffset, using Win10 defaults.");
+            offsets.paddingOffset = [16, 74];
+            submitOffsets();
+        }, 1000);
+    }
+    window.onload = () => {
+        if (window.history.length > 1) {
+            window.opener.requestOffset(false);
+            window.close();
+        }
+        offsets.fullScreen = [screen.width, screen.height];
+        offsets.availScreen = [screen.availWidth, screen.availHeight];
+        if (window.screenLeft == 0 && window.screenTop == 0) {
+            offsets.cornerOffset = [0, 0];
+            tryResize();
+        } else {
+            window.moveTo(0, 0);
+            requestAnimationFrame(()=>{
+                offsets.cornerOffset = [window.screenLeft, window.screenTop];
+                if (offsets.cornerOffset.some(e=>e>100))
+                    window.opener.console.error(`cornerOffset seems too big (${offsets.cornerOffset})`);
+                tryResize();
+            });
+        }
+    }
+    window.resizeTo(100, 100);
+</script>
+</body>
+</html>
