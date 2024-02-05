@@ -977,6 +977,8 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     document.getElementById("outroText").style.display = trueEnding ? "inline" : "none";
     endText.style.display = "block";
     introText.style.opacity = "0";
+    // iframe (cohost) workaround
+    endText.style.transform = (window.innerHeight == 640) ? "scale(0.5) translate(-240px, -240px)" : "";
     setTimeout(() => endText.style.opacity = "1", 32);
     setTimeout(() => introText.style.display = "none", 750);
   }
