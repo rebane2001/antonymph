@@ -414,7 +414,7 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
 | go for.                                                                     |
 |                                                                             |
 | Oh, and if you'd like to save this entire thing on your hard drive,         |
-| https://lyra.horse/antonymph/antonymph_20240408.zip                         |
+| https://lyra.horse/antonymph/antonymph_20240812.zip                         |
 |                                                               ~ Lyra Rebane |
 \*****************************************************************************/
 
@@ -563,13 +563,6 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     introMusic.loop = true;
   });
 
-  function checkSettings() {
-    windowRateLimit = parseInt(document.getElementById("limit-window").value);
-    frameRateLimit = parseInt(document.getElementById("limit-fps").value);
-    const showWarning = (windowRateLimit && frameRateLimit) && ((windowRateLimit != 1) || (frameRateLimit != 1));
-    document.getElementById("limit-warn").style.display = showWarning ? "block" : "none";
-  }
-
   function setSpeed(speed) {
     mainAudio.playbackRate = speed;
     vyletIntro.playbackRate = speed;
@@ -594,6 +587,17 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     vyletIntro.play();
   }
 
+  let wakeLock = null;
+  async function aquireWakeLock() {
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+    } catch (e) {}
+  }
+  function dropWakeLock() {
+    if (wakeLock)
+      wakeLock.release().then(() => wakeLock = null);
+  }
+
   function setDisplaySizeString() {
     if (hasStarted) return;
     const {width, height, availWidth, availHeight} = screen;
@@ -613,14 +617,22 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
       displaySizeString.innerHTML = `<font color="red">Your current display is too small, you'll probably have a bad experience.</font>${window?.devicePixelRatio > 1 ? '<br><font color="yellow">Your display is using scaling, check your settings for higher resolutions.</font>' : ''}${(width >= 1650 && height >= 1000) ? '<br><font color="yellow">Your display seems big enough, but your taskbar/dock/menubar is taking up too much space.</font>' : ''}`;
     if (window.innerWidth > (window.outerWidth + 16))
       displaySizeString.innerHTML += '<br><font color="yellow">You seem to be using zoom, please use 100% (globally).</font>'
-  }
-           
+  }                  
+                                                   
   /************************************************/
   /* DevTools doesn't let you see more than 10k   */
   /* characters of JS code in the inspector. So   */
   /* if it cuts off here for you, use either the  */
   /* Sources tab in DevTools or just view-source. */
   /************************************************/
+
+
+  function checkSettings() {
+    windowRateLimit = parseInt(document.getElementById("limit-window").value);
+    frameRateLimit = parseInt(document.getElementById("limit-fps").value);
+    const showWarning = (windowRateLimit && frameRateLimit) && ((windowRateLimit != 1) || (frameRateLimit != 1));
+    document.getElementById("limit-warn").style.display = showWarning ? "block" : "none";
+  }
 
   const navSound = new Audio("/antonymph/navigate.mp3");
   window.addEventListener("click", (event) => playNavSound(0.5));
@@ -949,17 +961,6 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
 
   function requestOffset(requestAsTarget) {
     window.open("offset.html", requestAsTarget ? `target-4` : `offset`, "popup,height=100,width=100,top=0,left=0");
-  }
-
-  let wakeLock = null;
-  async function aquireWakeLock() {
-    try {
-      wakeLock = await navigator.wakeLock.request("screen");
-    } catch (e) {}
-  }
-  function dropWakeLock() {
-    if (wakeLock)
-      wakeLock.release().then(() => wakeLock = null);
   }
 
   function startExperience() {
