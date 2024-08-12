@@ -480,6 +480,7 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
 
   function getBrowserType() {
     if (/Android|iPhone|iPad|iPod|Windows Phone/.test(navigator.userAgent)) return "mobile";
+    if (navigator.userAgent.indexOf("Ladybird/") != -1) return "ladybird";
     if (navigator.userAgent.indexOf(" OPR/") != -1) return "opera"; // opera gx, still chrome but self-reports
     if (navigator.userAgent.indexOf("Chrome") != -1) return "chrome";
     if (navigator.userAgent.indexOf("Firefox") != -1) return "firefox";
@@ -998,6 +999,7 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
       "firefox": "check_firefox.png",
       "safari": "check_safari.png",
       "ie": "check_ie.png",
+      "ladybird": "check_ladybird.png",
     }?.[getBrowserType()] ?? "check_err.png";
     document.getElementById("checkmain").src = "/antonymph/" + imageSrc;
   }
@@ -3773,6 +3775,7 @@ asshole tries to shut you down, hold steady to your love for being alive`;
 
   function requestMIDIPermission() {
     if (midi) return;
+    if (!("permissions" in navigator)) return;
     navigator.permissions.query({ name: "midi", sysex: false }).then((result) => {
       if (result.state === "granted" || (localStorage.getItem(`antonymph.achievement.antonymph`) && result.state === "prompt"))
         navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
