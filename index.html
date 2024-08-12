@@ -951,9 +951,21 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     window.open("offset.html", requestAsTarget ? `target-4` : `offset`, "popup,height=100,width=100,top=0,left=0");
   }
 
+  let wakeLock = null;
+  async function aquireWakeLock() {
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+    } catch (e) {}
+  }
+  function dropWakeLock() {
+    if (wakeLock)
+      wakeLock.release().then(() => wakeLock = null);
+  }
+
   function startExperience() {
     playNavSound();
     requestOffset();
+    aquireWakeLock();
     hasStarted = true;
     allowUrlChanges = document.getElementById("allowUrlChanges").checked;
     windowRateLimit = parseInt(document.getElementById("limit-window").value);
@@ -3673,6 +3685,7 @@ asshole tries to shut you down, hold steady to your love for being alive`;
 
   function experienceEnd() {
     closePopups();
+    dropWakeLock();
     hasStarted = false;
     introMusic.muted = false;
     introMusic.currentTime = 0;
