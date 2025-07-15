@@ -1865,7 +1865,9 @@ ${messagesHtml}
       //const currentZoom = Math.floor(currentBeat*4);
       //const currentOffset = 1*Math.floor(4*Math.max(0, 4-currentBeat));
       // const currentOffset = 0;
-      navigatePopup(3, `https://www.openstreetmap.org/?mlat=37.6486&mlon=-122.4296#map=${Math.min(19, currentMapBeat)}/37.6486/-122.4296`, false)
+      // 2025-07 update - change openstreetmap provider because the old one broke
+      //navigatePopup(3, `https://www.openstreetmap.org/?mlat=37.6486&mlon=-122.4296#map=${Math.min(19, currentMapBeat)}/37.6486/-122.4296`, false)
+      navigatePopup(3, `https://www.openstreetbrowser.org/#roads/w515658673&map=${Math.min(19, currentMapBeat)}/37.6486/-122.4296`, false)
       if (platformFixes.focusFix) popups[4]?.focus();
     }
 
