@@ -561,12 +561,17 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
       });
     });
     introMusic.loop = true;
+    
+    checkSettings();
   });
 
-  function setSpeed(speed) {
+  function initializeSpeed(speed) {
     mainAudio.playbackRate = speed;
     vyletIntro.playbackRate = speed;
     introMusic.playbackRate = speed;
+  }
+  function setSpeed(speed) {
+    initializeSpeed(speed);
     unlockAchievement("nightcore");
   }
   function onSpeedChange() {
@@ -632,6 +637,11 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     frameRateLimit = parseInt(document.getElementById("limit-fps").value);
     const showWarning = (windowRateLimit && frameRateLimit) && ((windowRateLimit != 1) || (frameRateLimit != 1));
     document.getElementById("limit-warn").style.display = showWarning ? "block" : "none";
+
+    // load in last used unlockable settings if they were selected before refresh/emergencyStop
+    selectSkip();
+    initializeSpeed(document.getElementById("speed").value);
+    initializeTTS(); // does not preserve dynamically loaded tts voices that were previously selected
   }
 
   const navSound = new Audio("/antonymph/navigate.mp3");
@@ -1668,7 +1678,7 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     selectTTS();
   }
 
-  function selectTTS() {
+  function initializeTTS() {
     const voiceId = parseInt(tts.value);
     const useInstrumental = tts.value !== "vylet";
     textToSpeech = !!voiceId;
@@ -1677,6 +1687,11 @@ Music volume <input id="volume" type="range" value="1" min="0" max="1" step="0.0
     mainAudio.volume = textToSpeech ? vyletIntro.volume*0.5 : vyletIntro.volume;
     mainAudio.playbackRate = vyletIntro.playbackRate;
     mainAudio.currentTime = currentTime;
+    return voiceId;
+  }
+
+  function selectTTS() {
+    voiceId = initializeTTS();
     window?.speechSynthesis?.cancel();
     if (voiceId) {
       ttsVoice = ttsVoices[voiceId - 1];
